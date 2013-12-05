@@ -1,2 +1,3 @@
 echo "Setting NCBI- Solr memory params";
+echo "exporting _JAVA_OPTIONS"
 export _JAVA_OPTIONS="-Xms350m -Xmx512m"
