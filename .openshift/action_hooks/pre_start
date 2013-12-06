@@ -1,3 +1,25 @@
-echo "Setting NCBI- Solr memory params";
-echo "exporting _JAVA_OPTIONS"
+#!/bin/bash
+set -x
+
+echo "Setting NCBI- Solr memory params by exporting _JAVA_OPTIONS";
 export _JAVA_OPTIONS="-Xms350m -Xmx512m"
+
+
+cd $OPENSHIFT_DATA_DIR
+
+#if directory doesn't exist, then we need to install
+if [ ! -d $OPENSHIFT_DATA_DIR/solr.home ]; then
+
+    # download and untar solr 4.6.0
+    curl -O http://mirror.cc.columbia.edu/pub/software/apache/lucene/solr/4.6.0/solr-4.6.0.tgz && tar zxvf solr-4.6.0.tgz;
+
+    # make solr.home
+    mkdir solr.home;
+
+    #copy the needed jars, solr index, and config files to solr.home
+    cp -rf solr-4.6.0/example/lib/ext/ solr-4.6.0/example/solr/* solr-4.6.0/example/resources/log4j.properties solr.home
+    cp solr-4.6.0/contrib/dataimporthandler/lib/* solr-4.6.0/contrib/extraction/lib/* solr.home/ext
+
+    #restart server
+    ctl_all restart
+fi
